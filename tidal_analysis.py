@@ -6,6 +6,7 @@ import uptide
 import pytz
 from scipy.stats import linregress
 
+
 #open the file name and remove all unnecessary info
 def read_tidal_data(filename):
     """Opens the specified file, 1947, and filtering the data"""
