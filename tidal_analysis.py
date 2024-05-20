@@ -7,7 +7,7 @@ import uptide
 #import pytz
 from scipy.stats import linregress
 import matplotlib.dates as enddates
-import argparse
+#import argparse
 
 #open the file name and remove all unnecessary info
 def read_tidal_data(filename):
@@ -29,15 +29,14 @@ def read_tidal_data(filename):
 
 def extract_single_year_remove_mean(year, data):
     """Opens the specified file and removing the mean from the year"""
-#testinf for the year 1947
-    # year1947 = extract_single_year_remove_mean("year",data)
-    #the global variable accesses info outside and inside the function
-    #https://www.w3schools.com/python/python_variables_global.asp
-   # global year_data
+#https://www.w3schools.com/python/python_variables_global.asp
+#year starts on the 1st of Jan and ends on the 31st of Dec
+#month then day
     year_string_start = str(year)+"0101"
     year_string_end = str(year)+"1231"
     year_data = data.loc[year_string_start:year_string_end, ['Sea Level']]
     year_data=year_data.apply(pd.to_numeric, errors="raise")
+#removing the mean value
     year_data= (year_data)-(year_data["Sea Level"].mean())
     return year_data
 
@@ -127,23 +126,23 @@ def tidal_analysis(data, constituents, start_datetime):
 
 #      return
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(
-                     prog="UK Tidal analysis",
-                     description="Calculate tidal constiuents and RSL from tide gauge data",
-                     epilog="Copyright 2024, Jon Hill"
-                     )
+#    parser = argparse.ArgumentParser(
+#                     prog="UK Tidal analysis",
+#                     description="Calculate tidal constiuents and RSL from tide gauge data",
+#                     epilog="Copyright 2024, Jon Hill"
+#                     )
 
-    parser.add_argument("directory",
-                    help="the directory containing txt files with data")
-    parser.add_argument('-v', '--verbose',
-                    action='store_true',
-                    default=False,
-                    help="Print progress")
+#    parser.add_argument("directory",
+#                    help="the directory containing txt files with data")
+#    parser.add_argument('-v', '--verbose',
+#                    action='store_true',
+#                    default=False,
+#                    help="Print progress")
 
-    args = parser.parse_args()
-    dirname = args.directory
-    verbose = args.verbose
+ #   args = parser.parse_args()
+#    dirname = args.directory
+ #   verbose = args.verbose
 #tidy up the code
 #commit the links
