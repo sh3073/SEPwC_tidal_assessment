@@ -7,7 +7,7 @@ import uptide
 #import pytz
 from scipy.stats import linregress
 import matplotlib.dates as enddates
-#import argparse
+import argparse
 
 #open the file name and remove all unnecessary info
 def read_tidal_data(filename):
@@ -125,23 +125,25 @@ def tidal_analysis(data, constituents, start_datetime):
 
 #      return
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
 
-#    parser = argparse.ArgumentParser(
-#                     prog="UK Tidal analysis",
-#                     description="Calculate tidal constiuents and RSL from tide gauge data",
-#                     epilog="Copyright 2024, Jon Hill"
-#                     )
+    parser = argparse.ArgumentParser(
+                     prog="UK Tidal analysis",
+                     description="Calculate tidal constiuents and RSL from tide gauge data",
+                     epilog="Copyright 2024, Jon Hill"
+                     )
 
-#    parser.add_argument("directory",
-#                    help="the directory containing txt files with data")
-#    parser.add_argument('-v', '--verbose',
-#                    action='store_true',
-#                    default=False,
-#                    help="Print progress")
+    parser.add_argument("directory",
+    help="the directory containing txt files with data")
+    parser.add_argument('-v', '--verbose',
+                    action='store_true',
+                    default=False,
+                    help="Print progress")
 
- #   args = parser.parse_args()
-#    dirname = args.directory
- #   verbose = args.verbose
+    args = parser.parse_args()
+    dirname = args.directory
+    verbose = args.verbose
+    print(read_tidal_data("data"))
+#    print(read_tidal_data("data/1947ABE.txt"))
 #tidy up the code
 #commit the links
