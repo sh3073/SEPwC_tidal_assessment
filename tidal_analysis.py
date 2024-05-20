@@ -1,11 +1,13 @@
 # import the modules you need here
 """Module providing a tidal analysis on tidal data."""
+#import datetime
 import pandas as pd
 import numpy as np
-import uptide 
-import pytz
+import uptide
+#import pytz
 from scipy.stats import linregress
-
+import matplotlib.dates as enddates
+import argparse
 
 #open the file name and remove all unnecessary info
 def read_tidal_data(filename):
@@ -21,6 +23,8 @@ def read_tidal_data(filename):
     data.replace(to_replace=".*M$",value={"Sea Level": np.nan}, regex=True,inplace=True)
     data.replace(to_replace=".*N$",value={"Sea Level": np.nan}, regex=True,inplace=True)
     data.replace(to_replace=".*T$",value={"Sea Level": np.nan}, regex=True,inplace=True)
+    #convert sea level values from str to floats
+    data["Sea Level"]=data["Sea Level"].astype(float)
     return data
 
 def extract_single_year_remove_mean(year, data):
@@ -52,8 +56,6 @@ def join_data(data1, data2):
     print(data1)
     #gauge_files = ["data/1946ABE.txt", "data/1947ABE.txt"]
 #data1 = 1947, data2 = 1946
-    #data1 = pd.read_csv(gauge_files[1])
-    #data2 = pd.read_csv(gauge_files[0])
     #url = https://www.geeksforgeeks.org/python-pandas-merging-joining-and-concatenating/
     #url : https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
     data = pd.concat([data1, data2])
@@ -62,67 +64,86 @@ def join_data(data1, data2):
     #sorting the columns with 1946 then 1947 in ascending order of year and dates by "Datetime"
     data=data.sort_values(by='Datetime',ascending=True)
     #url : https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
-  #  data=data.index[0] == pd.Timestamp('1946-01-01 00:00:00')
-  #  data = data.index[-1] == pd.Timestamp('1947-12-31 23:00:00')
-  #  data2 = pd.Timestamp("1946-01-01 00:00:00")
- #   data1 = pd.Timestamp('1947-12-31 23:00:00')
-    # check you get a fail if two incompatible dfs are given
-   # data2.drop(columns=["Sea Level","Time"], inplace=True)
  #   data = join_data(data1, data2)
     return data
 
 def sea_level_rise(data):
-#1946 data for aberdeen 
+    """Creating our sea level to date2num based on 1970"""
+#1946 data for aberdeen
 #remove nan
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop.html
     data = data.dropna(subset=['Sea Level'])
-    return data
-    print(data)
- #remove the mean (section mean)   
-    section_data= (section_data)-(section_data["Sea Level"].mean())
 #stats lin regress turning the index the num
-    x = ['Sea Level']
-    y = ['section_data']
+#converting Datetime to num with 1970 as the base year using date2num
+#https://matplotlib.org/stable/api/dates_api.html#matplotlib.dates.date2num
+    x = enddates.date2num(data.index)
+    y = data['Sea Level'].values
+    print(x,y)
 #https://www.w3schools.com/python/python_ml_linear_regression.asp
-   slope, intercept, r, p, std_err = stats.linregress(x, y)
+# "_" removes unused data
+    slope, _intercept, _r, p, _std_err =linregress(x, y)
+    #tidalmodel temp - scripts - analyse tides.py
+    return slope, p
    #https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
-   scipy.stats.linregress(x, y, alternative='greater')
 
-def myfunc(x):
-   return slope * x + intercept
-
-mymodel = list(map(myfunc, x))
-
-plt.scatter(x, y)
-plt.plot(x, mymodel)
-plt.show()
- #    date2num in matplot loop
-
- 
-#The `scipy.stats' module can do the linear regression to work out sea-level rise. You may find it easier to work out the rise per day and multiply by 365 to get metres per year.
-#line of best fit 
-#    data=([datatime.time(1946,01,01, 00,00,00), datetime.time(1946,01,01, 23:00:00)])
- #   data=rise per day*365
-#    return
-      
 def tidal_analysis(data, constituents, start_datetime):
-    """Creating our tidal analysis with 3 components"""
-# More on uptide: https://github.com/stephankramer/uptide
-
-# we create a Tides object with a list of the consituents we want.
-    data = uptide.Tides(['M2'])
+    """Creating our tidal constituents using amplitudes and phases"""
+# we create a Tides object with a list of the consituents we want
+#arranging it in chronological order
+   # data=data.sort_values(by='Datetime',ascending=True)
+   # print (data)
+#removing Nan values and 15 jan and 10 of mar
+    data = data.dropna(subset=['Sea Level'])
+    print("HERE")
+ #   data = data.drop(index=['1946-01-15 00:00:00', '1947-03-10 00:00:00'])
+    print(data)
 # We then set out start time. All data must then be in second since this time
-    data=data_tide.set_initial_time(Datetime.Datetime(1946,1,1,0,0,0))
-    
-# so let's swap our dates for seconds since midnight 1/1/2008.
-# Note the 1e9 (the int64 seconds epoch in numpy is multiplied by this for some reason)
-    seconds_since = (data.index.astype('int64').to_numpy()/1e9) - datetime.datetime(1946,1,1,0,0,0).timestamp()
-    amp,pha = uptide.harmonic_analysis(tide, FD_2008['Sea Level'].to_numpy()/1000, seconds_since)
+    tide = uptide.Tides(constituents)
+    print(tide.f)
+    tide.set_initial_time(start_datetime)
+    print(tide.f)
+    #print (tide.set_initial_time)
+    #  data=pd.date_range(start_datetime='1946,1,1,0,0,0', end_datetime='1947,12,31,0,0,0')
+  #  data= pd.date_range(start=pd.to_datetime("01151946"),end=pd.to_datetime("12311947")
+#    tide.set_end_time(datetime.datetime(1947,12,31,0,0,0))
 
-# uptide returns the amplitudes as a list (in the order of the constiuents listed above) and the phases (in radians)
+# lets change our dates into seconds using 1e9 (int64 secs epoch in numpy)
+# We then send the elevation data (our tides) and time in seconds to uptide
+# and do the harmonic analysis
+
+    secs = (data.index.astype('int64').to_numpy() / 1e9) - start_datetime.timestamp()
+
+#issue is with this line
+    print(tide.f)
+    amp, pha = uptide.harmonic_analysis(tide, data["Sea Level"].to_numpy(), secs)
     print(amp, pha)
+    #print(uptide.select_constituents(constituents,365*24*60*60)) # This is 365 days in seconds
+    #tide = uptide.Tides(constituents)
+    #print(tide.get_minimum_Rayleigh_period()/86400.)
+    return (amp,pha)
 
-    return
+#def get_longest_contiguous_data(data):
 
-def get_longest_contiguous_data(data):
-    return
+
+#    return
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+                     prog="UK Tidal analysis",
+                     description="Calculate tidal constiuents and RSL from tide gauge data",
+                     epilog="Copyright 2024, Jon Hill"
+                     )
+
+    parser.add_argument("directory",
+                    help="the directory containing txt files with data")
+    parser.add_argument('-v', '--verbose',
+                    action='store_true',
+                    default=False,
+                    help="Print progress")
+
+    args = parser.parse_args()
+    dirname = args.directory
+    verbose = args.verbose
+#tidy up the code
+#commit the links
