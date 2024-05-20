@@ -16,14 +16,14 @@ def read_tidal_data(filename):
     data=pd.read_csv(filename , sep=r"\s+", skiprows=[0,1,2,3,4,5,6,7,8,10])
 #renaming the column as Sea Level
     data=data.rename(columns={data.columns[3] : 'Sea Level'})
-#combining the columsn data and time into one column
+#combining the column data and time into one column
     data["Datetime"]= pd.to_datetime(data['Date'] + ' ' + data['Time'])
     data = data.set_index("Datetime")
 #replace M,N,T with Nan in Sea Level (number infront should disappear)
     data.replace(to_replace=".*M$",value={"Sea Level": np.nan}, regex=True,inplace=True)
     data.replace(to_replace=".*N$",value={"Sea Level": np.nan}, regex=True,inplace=True)
     data.replace(to_replace=".*T$",value={"Sea Level": np.nan}, regex=True,inplace=True)
-    #convert sea level values from str to floats
+    #convert sea level values from strings to floats
     data["Sea Level"]=data["Sea Level"].astype(float)
     return data
 
