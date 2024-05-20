@@ -1,13 +1,13 @@
 # import the modules you need here
 """Module providing a tidal analysis on tidal data."""
 #import datetime
+import argparse
 import pandas as pd
 import numpy as np
 import uptide
 #import pytz
 from scipy.stats import linregress
 import matplotlib.dates as enddates
-import argparse
 
 #open the file name and remove all unnecessary info
 def read_tidal_data(filename):
@@ -54,21 +54,19 @@ def join_data(data1, data2):
     """Combining data in ascending year (1946 & 1947)"""
     print(data1)
 #data1 = 1947, data2 = 1946
-    #url = https://www.geeksforgeeks.org/python-pandas-merging-joining-and-concatenating/
-    #url : https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
+#uhttps://www.geeksforgeeks.org/python-pandas-merging-joining-and-concatenating/
+#https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
     data = pd.concat([data1, data2])
 #data for ['Sea Level'].size == 8760*2 = 17,520
     print(data)
-    #sorting the columns with 1946 then 1947 in ascending order of year and dates by "Datetime"
+#sorting the columns with 1946 then 1947 in ascending order of year and dates by "Datetime"
     data=data.sort_values(by='Datetime',ascending=True)
-    #url : https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
- #   data = join_data(data1, data2)
+#https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
     return data
 
 def sea_level_rise(data):
     """Creating our sea level to date2num based on 1970"""
-#1946 data for aberdeen
-#remove nan
+#remove NaN values again
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop.html
     data = data.dropna(subset=['Sea Level'])
 #stats lin regress turning the index the num
@@ -98,6 +96,7 @@ def tidal_analysis(data, constituents, start_datetime):
 # We then set out start time. All data must then be in second since this time
     tide = uptide.Tides(constituents)
     print(tide.f)
+#use the start_datetime to use it for any data file in aberdeen, dover, whitby
     tide.set_initial_time(start_datetime)
     print(tide.f)
     #print (tide.set_initial_time)
@@ -134,7 +133,7 @@ if __name__ == '__main__':
                      )
 
     parser.add_argument("directory",
-    help="the directory containing txt files with data")
+                        help="the directory containing txt files with data")
     parser.add_argument('-v', '--verbose',
                     action='store_true',
                     default=False,
@@ -143,7 +142,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     dirname = args.directory
     verbose = args.verbose
-    print(read_tidal_data("data"))
-#    print(read_tidal_data("data/1947ABE.txt"))
+#https://www.geeksforgeeks.org/how-to-pass-a-list-as-a-command-line-argument-with-argparse/
+#printed out the arguments
+    print ("args.directory","args.verbose")
+
 #tidy up the code
 #commit the links
