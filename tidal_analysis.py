@@ -42,18 +42,17 @@ def extract_single_year_remove_mean(year, data):
 
 def extract_section_remove_mean(start, end, data):
     """Opens the specified file and removing the mean from the section"""
-   # global section_data
+#same concept as single_year_remove_mean
     section_start = str(start)
     section_end = str(end)
-    section_data = data.loc[section_start:section_end, ['Sea Level']]
-    section_data = section_data.apply(pd.to_numeric, errors="raise")
+    section_data = data.loc[section_start:section_end,['Sea Level']]
+    section_data = section_data.apply(pd.to_numeric,errors="raise")
     section_data= (section_data)-(section_data["Sea Level"].mean())
     return section_data
 
 def join_data(data1, data2):
     """Combining data in ascending year (1946 & 1947)"""
     print(data1)
-    #gauge_files = ["data/1946ABE.txt", "data/1947ABE.txt"]
 #data1 = 1947, data2 = 1946
     #url = https://www.geeksforgeeks.org/python-pandas-merging-joining-and-concatenating/
     #url : https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
