@@ -1,6 +1,6 @@
 # import the modules you need here
 """Module providing a tidal analysis on tidal data."""
-#import datetime
+import datetime
 import argparse
 import pandas as pd
 import numpy as np
@@ -8,6 +8,9 @@ import uptide
 #import pytz
 from scipy.stats import linregress
 import matplotlib.dates as enddates
+import glob
+import os
+import sys
 
 #open the file name and remove all unnecessary info
 def read_tidal_data(filename):
@@ -19,6 +22,8 @@ def read_tidal_data(filename):
 #combining the column data and time into one column
     data["Datetime"]= pd.to_datetime(data['Date'] + ' ' + data['Time'])
     data = data.set_index("Datetime")
+#dropping columns as we aren't using them
+    data=data.drop(columns=['Date', 'Time', 'Cycle','Residual'])
 #replace M,N,T with Nan in Sea Level (number infront should disappear)
     data.replace(to_replace=".*M$",value={"Sea Level": np.nan}, regex=True,inplace=True)
     data.replace(to_replace=".*N$",value={"Sea Level": np.nan}, regex=True,inplace=True)
@@ -118,6 +123,7 @@ def tidal_analysis(data, constituents, start_datetime):
     #print(tide.get_minimum_Rayleigh_period()/86400.)
     return (amp,pha)
 
+        
 #def get_longest_contiguous_data(data):
 
 
@@ -138,12 +144,71 @@ def tidal_analysis(data, constituents, start_datetime):
 #                    default=False,
 #                    help="Print progress")
 
-#    args = parser.parse_args()
-#    dirname = args.directory
-#    verbose = args.verbose
+ #   args = parser.parse_args()
+ #   dirname = args.directory
+ #   verbose = args.verbose
 #https://www.geeksforgeeks.org/how-to-pass-a-list-as-a-command-line-argument-with-argparse/
 #printed out the arguments
-#    print ("args.directory","args.verbose")
+  #  print ("args.directory","args.verbose")
+#----------------------------------------
+# Listing the path for all files in the data directory (dirname)
+#https://docs.python.org/3/library/glob.html
+#choosing files that end with txt
+
+#dirname = args.directory
+all_files = glob.glob("data/aberdeen/*.txt")
+
+#all_files_path = glob.glob(str(dirname)+"/*.txt")
+formatting_files = []
+
+#reading all the files
+for file in all_files:
+    file = read_tidal_data(file)
+    formatting_files.append(file)
+    print (formatting_files)
+    print ("-------------")
+
+ 
+#for item in all_files:
+#    print(type(item))
+#they are all strings
+       
+#removing NaN values
+#for df in all_files:
+    # Check if 'Sea Level' column exists in the DataFrame
+#    if 'Sea Level' in df.columns:
+        # Drop rows with NaN values in 'Sea Level' column
+#        df.dropna(subset=['Sea Level'], inplace=True)
+#all_files = all_files.dropna(subset=['Sea Level'], inplace= True)
+
+#combining all the files 
+#https://saturncloud.io/blog/how-to-import-multiple-csv-files-into-pandas-and-concatenate-into-one-dataframe/
+#all_files = pd.concat(formatting_files)
+
+    
+#data = pd.concat(all_files)
+#print(data)
+
+#sorting the data chronologically via datetime column
+#  all_files = all_files.sort_values(by="Datetime", ascending=True)
+#  print (all_files)
+#
+#data=pd.concat(all_files, ignore_index = True)
+#print (data)
+
+#for file1 in path1:
+#    with open(file1, "r") as file:
+#        data1 = file.read()
+#        print(data1)
+
+#https://saturncloud.io/blog/how-to-import-multiple-csv-files-into-pandas-and-concatenate-into-one-dataframe/        
+#for file1 in path1:
+ #   data1=pd.read_csv(os.path.join(path1, file1))
+#    file1.append(data1)
+#    print (data1)
+
 
 #tidy up the code
 #commit the links
+
+#gihub url and last commit statement
