@@ -88,8 +88,6 @@ def tidal_analysis(data, constituents, start_datetime):
     """Creating our tidal constituents using amplitudes and phases"""
 # we create a Tides object with a list of the consituents we want
 #arranging it in chronological order
-   # data=data.sort_values(by='Datetime',ascending=True)
-   # print (data)
 #removing Nan values and 15 jan and 10 of mar
     data = data.dropna(subset=['Sea Level'])
     print("HERE")
@@ -97,7 +95,6 @@ def tidal_analysis(data, constituents, start_datetime):
     print(data)
 # We then set out start time. All data must then be in second since this time
     tide = uptide.Tides(constituents)
-    print(tide.f)
 #use the start_datetime to use it for any data file in aberdeen, dover, whitby
     tide.set_initial_time(start_datetime)
     print(tide.f)
