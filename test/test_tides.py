@@ -11,7 +11,6 @@ import numpy as np
 import uptide
 import pytz
 import datetime
-import argparse
 
 class TestTidalAnalysis():
     

@@ -66,11 +66,13 @@ def join_data(data1, data2):
 
 def sea_level_rise(data):
     """Creating our sea level to date2num based on 1970"""
-#remove NaN values again
+#remove NaN values in Sea Level again
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop.html
     data = data.dropna(subset=['Sea Level'])
 #stats lin regress turning the index the num
 #converting Datetime to num with 1970 as the base year using date2num
+#x values are Time (date2num values)
+#y values are the Sea Level values
 #https://matplotlib.org/stable/api/dates_api.html#matplotlib.dates.date2num
     x = enddates.date2num(data.index)
     y = data['Sea Level'].values
@@ -124,27 +126,27 @@ def tidal_analysis(data, constituents, start_datetime):
 
 #      return
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(
-                     prog="UK Tidal analysis",
-                     description="Calculate tidal constiuents and RSL from tide gauge data",
-                     epilog="Copyright 2024, Jon Hill"
-                     )
+#    parser = argparse.ArgumentParser(
+#                     prog="UK Tidal analysis",
+#                     description="Calculate tidal constiuents and RSL from tide gauge data",
+#                     epilog="Copyright 2024, Jon Hill"
+#                     )
 
-    parser.add_argument("directory",
-                        help="the directory containing txt files with data")
-    parser.add_argument('-v', '--verbose',
-                    action='store_true',
-                    default=False,
-                    help="Print progress")
+#    parser.add_argument("directory",
+#                        help="the directory containing txt files with data")
+#    parser.add_argument('-v', '--verbose',
+#                    action='store_true',
+#                    default=False,
+#                    help="Print progress")
 
-    args = parser.parse_args()
-    dirname = args.directory
-    verbose = args.verbose
+#    args = parser.parse_args()
+#    dirname = args.directory
+#    verbose = args.verbose
 #https://www.geeksforgeeks.org/how-to-pass-a-list-as-a-command-line-argument-with-argparse/
 #printed out the arguments
-    print ("args.directory","args.verbose")
+#    print ("args.directory","args.verbose")
 
 #tidy up the code
 #commit the links
