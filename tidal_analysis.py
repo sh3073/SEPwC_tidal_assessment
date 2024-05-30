@@ -75,10 +75,10 @@ def sea_level_rise(data):
     x = base_date.date2num(data.index)
     y = data['Sea Level'].values
 #https://www.w3schools.com/python/python_ml_linear_regression.asp
+#https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
 # "_" removes unused data
     slope, _intercept, _r, p, _std_err =linregress(x, y)
     return slope, p
-   #https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
 
 def tidal_analysis(data, constituents, start_datetime):
     """Creating our tidal constituents using amplitudes and phases"""
@@ -90,13 +90,13 @@ def tidal_analysis(data, constituents, start_datetime):
     tide.set_initial_time(start_datetime)
 #changing dates into seconds using 1e9 (int64 secs epoch in numpy)
 # We then send the elevation data (our tides) and time in seconds to uptide
-
     secs = (data.index.astype('int64').to_numpy() / 1e9) - start_datetime.timestamp()
     amp, pha = uptide.harmonic_analysis(tide, data["Sea Level"].to_numpy(), secs)
     return (amp,pha)
 
 def get_longest_contiguous_data(data):
     """Finding our longest contiguous data"""
+#https://stackoverflow.com/questions/41494444/pandas-find-longest-stretch-without-nan-values
     data=np.append(np.nan, np.append(data, np.nan))
 #locates the null value (nv)
     nv = np.where(np.isnan(data))[0]
@@ -140,11 +140,13 @@ if __name__ == '__main__':
     full_file = join_data(formatted_files[0], formatted_files[1])
 
 #python while loop under "python:the fundamentals" - runs through all files from dirname/ aberdeen
+#https://jhill1.github.io/SEPwC.github.io/Python.html
     COUNTER = 0
     while COUNTER < (len(formatted_files)):
         full_file = join_data(full_file, formatted_files[COUNTER])
         COUNTER = COUNTER + 1
 
+#https://stackoverflow.com/questions/23354115/printing-specific-parts-of-a-string-in-python
 #printing out the station name based on the dirname directory
     print("------------------------------------------------------------------")
     print ("            ")
