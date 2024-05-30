@@ -8,7 +8,8 @@ import matplotlib.dates as base_date
 import uptide
 import pandas as pd
 import numpy as np
-
+import sys
+import subprocess
 
 def read_tidal_data(filename):
     """Opens the specified file, 1947, and filtering the data"""
@@ -89,7 +90,7 @@ def tidal_analysis(data, constituents, start_datetime):
 #use the start_datetime to use it for any data file in aberdeen, dover, whitby
     tide.set_initial_time(start_datetime)
 #changing dates into seconds using 1e9 (int64 secs epoch in numpy)
-# We then send the elevation data (our tides) and time in seconds to uptide 
+# We then send the elevation data (our tides) and time in seconds to uptide
 
     secs = (data.index.astype('int64').to_numpy() / 1e9) - start_datetime.timestamp()
     amp, pha = uptide.harmonic_analysis(tide, data["Sea Level"].to_numpy(), secs)
@@ -100,7 +101,7 @@ def get_longest_contiguous_data(data):
     data=np.append(np.nan, np.append(data, np.nan))
 #locates the null value (nv)
     nv = np.where(np.isnan(data))[0]
-#shows how far the nv stretches (nvs) 
+#shows how far the nv stretches (nvs)
     nvs = np.diff(nv).argmax()
     return nv[[nvs, nvs+1]]+np.array([0,-2])
 
@@ -138,6 +139,7 @@ if __name__ == '__main__':
         formatted_files.append(format_file)
 
     full_file = join_data(formatted_files[0], formatted_files[1])
+    print(full_file)
 
 #python while loop under "python:the fundamentals" - runs through all files from dirname/ aberdeen
     COUNTER = 0
@@ -146,31 +148,35 @@ if __name__ == '__main__':
         COUNTER = COUNTER + 1
 
 #printing out the station name based on the dirname directory
+#To remove certain values/ letters, it needs to be converted into a string
+    DIRECTORY = str(dirname)
+#this gets rid of the first 5 characters
+    DIRECTORY = DIRECTORY [5:]
     print("------------------------------------------------------------------")
-    print ("            ")
-    print("Station Name: " + (dirname))
+    print("Station Name: " + (DIRECTORY))
 
-#printing out the M2 Amplitude  based on the dirname directory
+#printing out the Sea_Level rise
+    print("------------------------------------------------------------------")
+#adding a header
+    print ("Sea Level rise :")
+    print(sea_level_rise(full_file)[1])
+
+#printing out the M2 Amplitude
 #create a new variable
     print("------------------------------------------------------------------")
 #adding a header
     print ("M2 data:")
-    print ("            ")
-    print (tidal_analysis(full_file, ['M2'], datetime.datetime(2000, 1, 1,0,0,0)))
+    M2 = str(tidal_analysis(full_file, ['M2'], datetime.datetime(2000, 1, 1,0,0,0)))
+#this prints out the wanted values
+    print (M2[8:13])
 
-#printing out the S2 Amplitude  based on the dirname directory
+#printing out the S2 Amplitude
     print("------------------------------------------------------------------")
 #adding a header
     print ("S2 data:")
-    print ("            ")
-    print (tidal_analysis(full_file, ['S2'], datetime.datetime(2000, 1, 1,0,0,0)))
-
-#printing out the Sea_Level rise based on the dirname directory
-    print("------------------------------------------------------------------")
-#adding a header
-    print ("Sea Level rise :")
-    print ("            ")
-    print(sea_level_rise(full_file))
+    S2 = str(tidal_analysis(full_file, ['S2'], datetime.datetime(2000, 1, 1,0,0,0)))
+#this prints out the wanted values
+    print (S2 [8:13])
 
 #printing out the longest_contiguous_data based on the dirname directory
     print("------------------------------------------------------------------")
