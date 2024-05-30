@@ -8,8 +8,6 @@ import matplotlib.dates as base_date
 import uptide
 import pandas as pd
 import numpy as np
-import sys
-import subprocess
 
 def read_tidal_data(filename):
     """Opens the specified file, 1947, and filtering the data"""
