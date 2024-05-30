@@ -1,6 +1,6 @@
 # import the modules you need here
 """Module providing a tidal analysis on tidal data."""
-#import datetime
+import datetime
 import glob
 import argparse
 import pandas as pd
@@ -55,13 +55,11 @@ def extract_section_remove_mean(start, end, data):
 
 def join_data(data1, data2):
     """Combining data in ascending year (1946 & 1947)"""
-    print(data1)
 #data1 = 1947, data2 = 1946
 #uhttps://www.geeksforgeeks.org/python-pandas-merging-joining-and-concatenating/
 #https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
     data = pd.concat([data1, data2])
 #data for ['Sea Level'].size == 8760*2 = 17,520
-    print(data)
 #sorting the columns with 1946 then 1947 in ascending order of year and dates by "Datetime"
     data=data.sort_values(by='Datetime',ascending=True)
 #https://www.geeksforgeeks.org/how-to-sort-pandas-dataframe/
@@ -121,9 +119,13 @@ def tidal_analysis(data, constituents, start_datetime):
     #print(tide.get_minimum_Rayleigh_period()/86400.)
     return (amp,pha)
 
-#def get_longest_contiguous_data(data):
-#      return
-
+def get_longest_contiguous_data(data):
+    data=np.append(np.nan, np.append(data, np.nan))
+    nv = np.where(np.isnan(data))[0]
+    nvs = np.diff(nv).argmax()
+    return nv[[nvs, nvs+1]]+np.array([0,-2])
+    #numpy version
+    
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -144,26 +146,62 @@ if __name__ == '__main__':
     verbose = args.verbose
 #https://www.geeksforgeeks.org/how-to-pass-a-list-as-a-command-line-argument-with-argparse/
 #printed out the arguments
-  #  print ("args.directory","args.verbose")
+#    print ("args.directory","args.verbose")
 #----------------------------------------
 # Listing the path for all files in the data directory (dirname)
 #https://docs.python.org/3/library/glob.html
 #choosing files that end with txt
 
-#dirname = args.directory
-A_data_files = glob.glob("data/aberdeen/*.txt")
-
-#all_files_path = glob.glob(str(dirname)+"/*.txt")
+#dirname = args.directory - the directory name
+#A_data_files = glob.glob("data/aberdeen/*.txt")
+#globs in the directory you want
+    all_files = glob.glob(str(dirname)+ "/*.txt")
 # Initialize an empty DataFrame to store data
-formatting_files = []
+    formatted_files = []
+#for loop that runs through the aberdeen file    
+for file in all_files:
+ #calls the formattinf unction - read tidal data and gives the first file an       
+    format_file = read_tidal_data(file)
+#appends it to the empty list (empty list now contains the year 2000 from aberdeen)
+    formatted_files.append(format_file)
 
-#reading each individual file stored in the variable name A_data_files
-for file in A_data_files:
-    file = read_tidal_data(file)
-    formatting_files.append(file)
+    
+    full_file = join_data(formatted_files[0], formatted_files[1])
 
-# Concatenate all DataFrames
-A_data_files = pd.concat(formatting_files,ignore_index=True)
+#python while loop under "python:the fundamentals" - runs through all files from dirname/ aberdeen 
+    COUNTER = 0
+    while COUNTER < (len(formatted_files)):
+        full_file = join_data(full_file, formatted_files[COUNTER])
+        COUNTER = COUNTER + 1
+        print(full_file)
+    
+#    print(data_files)
+         
+#printing out the station name based on the dirname directory
+#print("Station Name: " + (dirname))
+#printing out the M2 Amplitude  based on the dirname directory
+#create a new variable 
+    print (tidal_analysis(full_file, ['M2'], datetime.datetime(2000, 1, 1,0,0,0)))
+#printing out the S2 Amplitude  based on the dirname directory
+    print (tidal_analysis(full_file, ['S2'], datetime.datetime(2000, 1, 1,0,0,0)))
+#printing out the Sea_Level rise based on the dirname directory
+    print(sea_level_rise(full_file))
+    
+    
+#printing out the longest_contiguous_data based on the dirname directory
+    print ("Longest contiguous data: ")
+    print (" ")
+    df = full_file["Sea Level"]
+    range_df = get_longest_contiguous_data(df)
+    RANGE_DF_STR = str(range_df)
+    RANGE_DF_STR = RANGE_DF_STR [1:-1]
+    RANGE_DF_STR = RANGE_DF_STR.SPLIT()
+    start_df = int(RANGE_DF_STR[0])
+    end_df = int(RANGE_DF_STR[1])
+    print(full_file[start_df:end_df])
 
-# Display the combined DataFrame
-print(A_data_files)
+    
+    
+    
+    print(get_longest_contiguous_data(full_file))
+
