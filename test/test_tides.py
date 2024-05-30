@@ -114,7 +114,6 @@ class TestTidalAnalysis():
         start_datetime = datetime.datetime(1946,1,15,0,0,0, tzinfo=tz)
         tide = uptide.Tides(constituents)
         tide.set_initial_time(start_datetime)
-        print("DFBDJFB", tide.f)
         amp,pha = tidal_analysis(data_segment, constituents, start_datetime)
 
         # for Aberdeen, the M2 and S2 amps are 1.307 and 0.441
